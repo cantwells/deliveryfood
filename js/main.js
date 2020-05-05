@@ -17,6 +17,7 @@ const closeAuth = document.querySelector('.close-auth');
 const buttonLogin = document.querySelector('.button-login');
 const logInForm = document.getElementById('logInForm');
 const loginInput = document.getElementById('login');
+const passInput = document.getElementById('password');
 const userName = document.querySelector('.user-name');
 
 let login = localStorage.getItem('deliveryFood');
@@ -51,14 +52,25 @@ const notAuthorized = () => {
   
   const logIn = (e) => {
     e.preventDefault();
-    login = loginInput.value;
-    localStorage.setItem('deliveryFood', login);
-    toggleModalAuth();
-    buttonAuth.removeEventListener('click', toggleModalAuth);
-    closeAuth.removeEventListener('click', toggleModalAuth);
-    logInForm.removeEventListener('submit', logIn);
-    logInForm.reset();
-    checkOut();
+    if( loginInput.value === '' ){
+      loginInput.style.borderColor = 'red';
+    }
+    if(passInput.value === ''){
+      passInput.style.borderColor = 'red';
+    }
+    if( loginInput.value && loginInput.value ){
+      loginInput.style.borderColor = '';
+      passInput.style.borderColor = '';
+
+      login = loginInput.value;
+      localStorage.setItem('deliveryFood', login);
+      toggleModalAuth();
+      buttonAuth.removeEventListener('click', toggleModalAuth);
+      closeAuth.removeEventListener('click', toggleModalAuth);
+      logInForm.removeEventListener('submit', logIn);
+      logInForm.reset();
+      checkOut();
+    }
   }
   
 
