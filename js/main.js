@@ -17,8 +17,9 @@ const closeAuth = document.querySelector('.close-auth');
 const buttonLogin = document.querySelector('.button-login');
 const logInForm = document.getElementById('logInForm');
 const loginInput = document.getElementById('login');
+const userName = document.querySelector('.user-name');
 
-let login = '';
+let login = localStorage.getItem('deliveryFood');
 
 const toggleModalAuth = () => {
   modalAuth.classList.toggle('is-open');
@@ -26,7 +27,23 @@ const toggleModalAuth = () => {
 }
 
 const authorized = () => {
-  console.log('Авторизован'); 
+  console.log('Авторизован');
+
+  const logOut = () => {
+    buttonAuth.style.display = '';
+    buttonOut.style.display = '';
+    userName.style.display = '';
+    login = null;
+    localStorage.removeItem('deliveryFood');
+    buttonOut.removeEventListener('click', logOut);
+    checkOut();
+  }
+
+  buttonAuth.style.display = 'none';
+  buttonOut.style.display = 'block';
+  userName.style.display = 'inline';
+  userName.textContent = login;
+  buttonOut.addEventListener('click', logOut);
 }
 
 const notAuthorized = () => {
@@ -35,7 +52,12 @@ const notAuthorized = () => {
   const logIn = (e) => {
     e.preventDefault();
     login = loginInput.value;
+    localStorage.setItem('deliveryFood', login);
     toggleModalAuth();
+    buttonAuth.removeEventListener('click', toggleModalAuth);
+    closeAuth.removeEventListener('click', toggleModalAuth);
+    logInForm.removeEventListener('submit', logIn);
+    logInForm.reset();
     checkOut();
   }
   
