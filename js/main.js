@@ -15,12 +15,42 @@ const buttonOut = document.querySelector('.button-out');
 const modalAuth = document.querySelector('.modal-auth');
 const closeAuth = document.querySelector('.close-auth');
 const buttonLogin = document.querySelector('.button-login');
+const logInForm = document.getElementById('logInForm');
+const loginInput = document.getElementById('login');
 
 let login = '';
 
 const toggleModalAuth = () => {
   modalAuth.classList.toggle('is-open');
+  logInForm.reset();
 }
 
-buttonAuth.addEventListener('click', toggleModalAuth);
-closeAuth.addEventListener('click', toggleModalAuth);
+const authorized = () => {
+  console.log('Авторизован'); 
+}
+
+const notAuthorized = () => {
+  console.log('Не авторизован');
+  
+  const logIn = (e) => {
+    e.preventDefault();
+    login = loginInput.value;
+    toggleModalAuth();
+    checkOut();
+  }
+  
+
+  buttonAuth.addEventListener('click', toggleModalAuth);
+  closeAuth.addEventListener('click', toggleModalAuth);
+  logInForm.addEventListener('submit', logIn);
+}
+
+function checkOut(){
+  if(login){
+    authorized();
+  }else{
+    notAuthorized();
+  }
+}
+
+checkOut();
