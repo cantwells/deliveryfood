@@ -34,6 +34,8 @@ const toggleModal = () => {
 //функция отображения мод. окна авторизации
 const toggleModalAuth = () => {
     modalAuth.classList.toggle('is-open');
+    loginInput.style.borderColor = '';
+    passInput.style.borderColor = '';
     logInForm.reset();
 }
 
@@ -136,13 +138,15 @@ const createCardGood = () => {
 const openGoods = (event) => {
     let target = event.target;
 
-    if (target.closest('.card-restaurant')) {
+    if (target.closest('.card-restaurant') && login) {
         containerPromo.classList.add('hide');
         restaurants.classList.add('hide');
         menu.classList.remove('hide');
         cardsMenu.textContent = '';
         createCardGood();
         createCardGood();
+    }else{
+      toggleModalAuth();
     }
 }
 
