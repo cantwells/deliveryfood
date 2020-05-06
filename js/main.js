@@ -13,6 +13,12 @@ const logInForm = document.getElementById('logInForm'); //форма в мод. 
 const loginInput = document.getElementById('login'); //поле ввода логина
 const passInput = document.getElementById('password'); //поле ввода пароля
 const userName = document.querySelector('.user-name'); //спан куда прописывается имя пользователя
+const cardsRestaurants = document.querySelector('.cards-restaurants'); //Секция для выводов карточек с блюдами
+const containerPromo = document.querySelector('.container-promo'); //секция с банером
+const restaurants = document.querySelector('.restaurants'); //секция где выводятся все товары и заголовок Рестораны
+const menu = document.querySelector('.menu'); //секция с выводом товаров определенной группы и заголовок с названием группы
+const logo = document.querySelector('.logo'); //лого сайта
+const cardsMenu = document.querySelector('.cards-menu'); //Секция для вывовода товаров из группы
 
 //получаем значение логина из локального хранилища браузера
 let login = localStorage.getItem('deliveryFood');
@@ -29,6 +35,15 @@ const toggleModal = () => {
 const toggleModalAuth = () => {
     modalAuth.classList.toggle('is-open');
     logInForm.reset();
+}
+
+//Функция для проверки пользователь является авторизированным или нет
+const checkOut = () => {
+    if (login) {
+        authorized();
+    } else {
+        notAuthorized();
+    }
 }
 
 //Функция логики авторизированного пользователя
@@ -91,13 +106,66 @@ const notAuthorized = () => {
     logInForm.addEventListener('submit', logIn);
 }
 
-//Функция для проверки пользователь является авторизированным или нет
-function checkOut() {
-    if (login) {
-        authorized();
-    } else {
-        notAuthorized();
+//Функция создания карточки для товара из группы
+const createCardGood = () => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.insertAdjacentHTML('beforeend', `
+        <img src="img/pizza-plus/pizza-classic.jpg" alt="image" class="card-image" />
+        <div class="card-text">
+            <div class="card-heading">
+                <h3 class="card-title card-title-reg">Пицца Классика</h3>
+            </div>
+            <div class="card-info">
+                <div class="ingredients">Соус томатный, сыр «Моцарелла», сыр «Пармезан», ветчина, салями, грибы.
+                </div>
+            </div>
+            <div class="card-buttons">
+                <button class="button button-primary button-add-cart">
+                <span class="button-card-text">В корзину</span>
+                <span class="button-cart-svg"></span>
+                </button>
+                <strong class="card-price-bold">510 ₽</strong>
+            </div>
+        </div>
+  `);
+    cardsMenu.insertAdjacentElement('beforeend', card);
+}
+
+//Фукнция срабатывания при нажатие по карточке в ресторане
+const openGoods = (event) => {
+    let target = event.target;
+
+    if (target.closest('.card-restaurant')) {
+        containerPromo.classList.add('hide');
+        restaurants.classList.add('hide');
+        menu.classList.remove('hide');
+        cardsMenu.textContent = '';
+        createCardGood();
+        createCardGood();
     }
+}
+
+//Функция создания карточки с товаром
+const createCardRestaurant = () => {
+    cardsRestaurants.insertAdjacentHTML('beforeend', `
+    <a class="card card-restaurant">
+      <img src="img/pizza-plus/preview.jpg" alt="image" class="card-image"/>
+      <div class="card-text">
+        <div class="card-heading">
+          <h3 class="card-title">Пицца плюс</h3>
+          <span class="card-tag tag">50 мин</span>
+        </div>
+        <div class="card-info">
+          <div class="rating">
+            4.5
+          </div>
+          <div class="price">От 900 ₽</div>
+          <div class="category">Пицца</div>
+        </div>
+      </div>
+    </a>
+  `);
 }
 
 //==============================================События===========================================
@@ -105,4 +173,18 @@ function checkOut() {
 cartButton.addEventListener("click", toggleModal);
 close.addEventListener("click", toggleModal);
 
+//Событие срабатывающие при клике по карточке товара
+cardsRestaurants.addEventListener('click', openGoods);
+
+logo.addEventListener('click', () => {
+    containerPromo.classList.remove('hide');
+    restaurants.classList.remove('hide');
+    menu.classList.add('hide');
+});
+
+//======================================Вызов функций=============================================
 checkOut();
+
+createCardRestaurant();
+createCardRestaurant();
+createCardRestaurant();
