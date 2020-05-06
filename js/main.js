@@ -125,7 +125,7 @@ const createCardGood = () => {
             <div class="card-buttons">
                 <button class="button button-primary button-add-cart">
                 <span class="button-card-text">В корзину</span>
-                <span class="button-cart-svg"></span>
+                <span class="button-cart-png"></span>
                 </button>
                 <strong class="card-price-bold">510 ₽</strong>
             </div>
