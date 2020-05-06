@@ -1,19 +1,9 @@
-//Добавляем вывод модального окна с корзиной
+'use strict';
+
+//========================Получение элементов========================================================
 const cartButton = document.querySelector("#cart-button"); //кнопка Корзина
 const modalCart = document.querySelector(".modal-cart"); //модальное окно для корзины
 const close = document.querySelector(".close"); //крестик модального окна
-
-//Функция отображения модального окна с корзиной
-const toggleModal = () => {
-    modalCart.classList.toggle("is-open");
-}
-
-//Событие на отображение и скрытие модального окна с корзиной
-cartButton.addEventListener("click", toggleModal);
-close.addEventListener("click", toggleModal);
-
-//day 1
-//Получение элементов
 const buttonAuth = document.querySelector('.button-auth'); //кнопка Войти
 const buttonOut = document.querySelector('.button-out'); //кнопка Выйти
 const modalAuth = document.querySelector('.modal-auth'); //модальное окно авторизации
@@ -27,6 +17,13 @@ const userName = document.querySelector('.user-name'); //спан куда пр�
 //получаем значение логина из локального хранилища браузера
 let login = localStorage.getItem('deliveryFood');
 
+
+//====================================Функции=====================================================
+
+//Функция отображения модального окна с корзиной
+const toggleModal = () => {
+    modalCart.classList.toggle("is-open");
+}
 
 //функция отображения мод. окна авторизации
 const toggleModalAuth = () => {
@@ -102,5 +99,10 @@ function checkOut() {
         notAuthorized();
     }
 }
+
+//==============================================События===========================================
+//Событие на отображение и скрытие модального окна с корзиной
+cartButton.addEventListener("click", toggleModal);
+close.addEventListener("click", toggleModal);
 
 checkOut();
