@@ -39,6 +39,12 @@ const toggleModalAuth = () => {
     logInForm.reset();
 }
 
+//Функция проверки валидации для поля логина
+const validlogin = (string) => {
+    const reg = /^[a-zA-Z][a-zA-Z0-9-_]{2,19}$/;
+    return reg.test(string);
+}
+
 //Функция для проверки пользователь является авторизированным или нет
 const checkOut = () => {
     if (login) {
@@ -88,13 +94,13 @@ const notAuthorized = () => {
     const logIn = (e) => {
         e.preventDefault();
         //Проверка на заполнение полей ввода
-        if (loginInput.value === '') {
+        if (loginInput.value === '' || !validlogin(loginInput.value)) {
             loginInput.style.borderColor = 'red';
         }
         if (passInput.value === '') {
             passInput.style.borderColor = 'red';
         }
-        if (loginInput.value && loginInput.value) {
+        if (validlogin(loginInput.value) && loginInput.value) {
             loginInput.style.borderColor = '';
             passInput.style.borderColor = '';
 
