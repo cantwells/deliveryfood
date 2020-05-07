@@ -48,6 +48,13 @@ const checkOut = () => {
     }
 }
 
+//Функция возврата на главную странцу
+const returnMain = () => {
+    containerPromo.classList.remove('hide');
+    restaurants.classList.remove('hide');
+    menu.classList.add('hide');
+}
+
 //Функция логики авторизированного пользователя
 const authorized = () => {
     console.log('Авторизован');
@@ -61,6 +68,7 @@ const authorized = () => {
         login = null; //обнуляем переменую логин. null по тому что когда localStorage пустой он возвращает null
         localStorage.removeItem('deliveryFood'); //удаляем данные из localStorage
         buttonOut.removeEventListener('click', logOut); //Удаляем событие нажатие кнопке Выйти
+        returnMain();
         checkOut();
     }
 
@@ -145,8 +153,8 @@ const openGoods = (event) => {
         cardsMenu.textContent = '';
         createCardGood();
         createCardGood();
-    }else{
-      toggleModalAuth();
+    } else {
+        toggleModalAuth();
     }
 }
 
@@ -180,11 +188,7 @@ close.addEventListener("click", toggleModal);
 //Событие срабатывающие при клике по карточке товара
 cardsRestaurants.addEventListener('click', openGoods);
 
-logo.addEventListener('click', () => {
-    containerPromo.classList.remove('hide');
-    restaurants.classList.remove('hide');
-    menu.classList.add('hide');
-});
+logo.addEventListener('click', returnMain);
 
 //======================================Вызов функций=============================================
 checkOut();
