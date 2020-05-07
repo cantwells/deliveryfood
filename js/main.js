@@ -19,6 +19,10 @@ const restaurants = document.querySelector('.restaurants'); //секция гд�
 const menu = document.querySelector('.menu'); //секция с выводом товаров определенной группы и заголовок с названием группы
 const logo = document.querySelector('.logo'); //лого сайта
 const cardsMenu = document.querySelector('.cards-menu'); //Секция для вывовода товаров из группы
+const restaurantTitle = document.querySelector('.restaurant-title'); //заголовок ресторана
+const restaurantRating = document.querySelector('.restaurant-rating'); //рейтинг ресторана
+const restaurantPrice = document.querySelector('.restaurant-price'); //цены в ресторане
+const restaurantCategory = document.querySelector('.restaurant-category'); //тип ресторана
 
 //получаем значение логина из локального хранилища браузера
 let login = localStorage.getItem('deliveryFood');
@@ -26,7 +30,7 @@ let login = localStorage.getItem('deliveryFood');
 
 //====================================Функции=====================================================
 
-//Функция инициализации
+//Функция получения данных из db
 const getData = async function(url) {
     const response = await fetch(url);
     if (!response.ok) {
@@ -34,6 +38,18 @@ const getData = async function(url) {
     } else {
         return await response.json();
     }
+}
+
+//Функция вызова swiper слайдера
+const startSlider = () => {
+    //============Swipper Slider============
+    new Swiper('.swiper-container', {
+        autoplay: true,
+        loop: true,
+        speed: 1300,
+        // effect: 'flip',
+        // slidesPerView: 2,
+    });
 }
 
 //Функция отображения модального окна с корзиной
@@ -69,6 +85,7 @@ const returnMain = () => {
     containerPromo.classList.remove('hide');
     restaurants.classList.remove('hide');
     menu.classList.add('hide');
+    // startSlider();
 }
 
 //Функция логики авторизированного пользователя
@@ -133,25 +150,25 @@ const notAuthorized = () => {
 }
 
 //Функция создания карточки для товара из группы
-const createCardGood = () => {
+const createCardGood = ({ description, image, name, price }) => {
+
     const card = document.createElement('div');
     card.className = 'card';
     card.insertAdjacentHTML('beforeend', `
-        <img src="img/pizza-plus/pizza-classic.jpg" alt="image" class="card-image" />
+        <img src="${image}" alt="image" class="card-image" />
         <div class="card-text">
             <div class="card-heading">
-                <h3 class="card-title card-title-reg">Пицца Классика</h3>
+                <h3 class="card-title card-title-reg">${name}</h3>
             </div>
             <div class="card-info">
-                <div class="ingredients">Соус томатный, сыр «Моцарелла», сыр «Пармезан», ветчина, салями, грибы.
-                </div>
+                <div class="ingredients">${description}</div>
             </div>
             <div class="card-buttons">
                 <button class="button button-primary button-add-cart">
                 <span class="button-card-text">В корзину</span>
                 <span class="button-cart-png"></span>
                 </button>
-                <strong class="card-price-bold">510 ₽</strong>
+                <strong class="card-price-bold">${price} ₽</strong>
             </div>
         </div>
   `);
@@ -160,15 +177,22 @@ const createCardGood = () => {
 
 //Фукнция срабатывания при нажатие по карточке в ресторане
 const openGoods = (event) => {
-    let target = event.target;
+    let target = event.target.closest('.card-restaurant');
 
-    if (target.closest('.card-restaurant') && login) {
+    if (target && login) {
         containerPromo.classList.add('hide');
         restaurants.classList.add('hide');
         menu.classList.remove('hide');
         cardsMenu.textContent = '';
-        createCardGood();
-        createCardGood();
+        restaurantTitle.textContent = target.querySelector('.card-title').textContent;
+        restaurantPrice.textContent = target.querySelector('.price').textContent;
+        restaurantRating.textContent = target.querySelector('.rating').textContent;
+        restaurantCategory.textContent = target.querySelector('.category').textContent;
+        getData(`../db/${target.dataset.product}`).then((data) => {
+            data.forEach((data) => {
+                createCardGood(data);
+            });
+        });
     } else {
         toggleModalAuth();
     }
@@ -192,17 +216,21 @@ const createCardRestaurant = (object) => {
         </div>
       </div>
     </a>
-  `);
+    `);
 }
 
+//Функция инициализации
 const init = () => {
     getData('../db/partners.json').then((data) => {
         data.forEach((data) => {
+
             createCardRestaurant(data);
         });
     });
+    startSlider();
     checkOut();
 }
+
 
 //==============================================События===========================================
 //Событие на отображение и скрытие модального окна с корзиной
@@ -217,12 +245,3 @@ logo.addEventListener('click', returnMain);
 //======================================Вызов функций=============================================
 
 init();
-//===================================Swipper Slider==============================================
-
-new Swiper('.swiper-container', {
-    autoplay: true,
-    loop: true,
-    speed: 1300,
-    // effect: 'flip',
-    // slidesPerView: 2,
-});

@@ -310,7 +310,8 @@ button {
     margin-left: 30px;
 }
 
-.rating {
+.rating,
+.restaurant-rating {
     background-image: url("../img/icon/rating.png");
     background-repeat: no-repeat;
     background-position: 0 7px;
@@ -324,13 +325,16 @@ button {
 }
 
 .price,
-.category {
+.category,
+.restaurant-price,
+.restaurant-category {
     color: #8c8c8c;
     font-size: 18px;
     line-height: 32px;
 }
 
-.price {
+.price,
+.restaurant-price {
     margin-right: 10px;
 }
 
