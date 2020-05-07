@@ -196,3 +196,13 @@ checkOut();
 createCardRestaurant();
 createCardRestaurant();
 createCardRestaurant();
+
+//===================================Swipper Slider==============================================
+
+new Swiper('.swiper-container', {
+    autoplay: true,
+    loop: true,
+    speed: 1300,
+    // effect: 'flip',
+    // slidesPerView: 2,
+});
