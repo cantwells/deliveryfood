@@ -6,6 +6,7 @@ const modalCart = document.querySelector(".modal-cart"); //модальное о
 const close = document.querySelector(".close"); //крестик модального окна
 const buttonAuth = document.querySelector('.button-auth'); //кнопка Войти
 const buttonOut = document.querySelector('.button-out'); //кнопка Выйти
+const buttonCart = document.querySelector('.button-cart'); //кнопка Корзина
 const modalAuth = document.querySelector('.modal-auth'); //модальное окно авторизации
 const closeAuth = document.querySelector('.close-auth'); //крестик мод. окна авторизации
 const buttonLogin = document.querySelector('.button-login'); //кнопка войти в окне авторизации
@@ -27,6 +28,15 @@ const restaurantCategory = document.querySelector('.restaurant-category'); //т�
 //получаем значение логина из локального хранилища браузера
 let login = localStorage.getItem('deliveryFood');
 
+//============Swipper Slider============
+const mySlider = new Swiper('.swiper-container', {
+    init: false,
+    autoplay: true,
+    loop: true,
+    speed: 1300,
+    // effect: 'flip',
+    // slidesPerView: 2,
+});
 
 //====================================Функции=====================================================
 
@@ -42,14 +52,7 @@ const getData = async function(url) {
 
 //Функция вызова swiper слайдера
 const startSlider = () => {
-    //============Swipper Slider============
-    new Swiper('.swiper-container', {
-        autoplay: true,
-        loop: true,
-        speed: 1300,
-        // effect: 'flip',
-        // slidesPerView: 2,
-    });
+
 }
 
 //Функция отображения модального окна с корзиной
@@ -85,7 +88,7 @@ const returnMain = () => {
     containerPromo.classList.remove('hide');
     restaurants.classList.remove('hide');
     menu.classList.add('hide');
-    // startSlider();
+    mySlider.update();
 }
 
 //Функция логики авторизированного пользователя
@@ -97,6 +100,7 @@ const authorized = () => {
         //выставляем кнопкам значени по умолчанию, а спан затераем
         buttonAuth.style.display = '';
         buttonOut.style.display = '';
+        buttonCart.style.display = '';
         userName.style.display = '';
         login = null; //обнуляем переменую логин. null по тому что когда localStorage пустой он возвращает null
         localStorage.removeItem('deliveryFood'); //удаляем данные из localStorage
@@ -107,7 +111,8 @@ const authorized = () => {
 
     //Прячем кнопку Войти и показываем Выйти и пропиываем имя пользователя в спан
     buttonAuth.style.display = 'none';
-    buttonOut.style.display = 'block';
+    buttonOut.style.display = 'flex';
+    buttonCart.style.display = 'flex';
     userName.style.display = 'inline';
     userName.textContent = login;
     buttonOut.addEventListener('click', logOut);
@@ -227,7 +232,7 @@ const init = () => {
             createCardRestaurant(data);
         });
     });
-    startSlider();
+    mySlider.init();
     checkOut();
 }
 
