@@ -24,9 +24,16 @@ const restaurantTitle = document.querySelector('.restaurant-title'); //заго�
 const restaurantRating = document.querySelector('.restaurant-rating'); //рейтинг ресторана
 const restaurantPrice = document.querySelector('.restaurant-price'); //цены в ресторане
 const restaurantCategory = document.querySelector('.restaurant-category'); //тип ресторана
+const buttonAddCart = document.querySelector('.button-add-cart'); //добавление в корзину
+const listItems = document.querySelector('.list-items'); //контейнер с выводом товаров
+const modalPricetag = document.querySelector('.modal-pricetag'); //вывод суммы покупки
+const buttonClearCart = document.querySelector('.clear-cart'); //кнопка отмены в корзине
 
 //получаем значение логина из локального хранилища браузера
 let login = localStorage.getItem('deliveryFood');
+
+//Корзина
+const cart = [];
 
 //============Swipper Slider============
 const mySlider = new Swiper('.swiper-container', {
@@ -93,8 +100,6 @@ const returnMain = () => {
 
 //Функция логики авторизированного пользователя
 const authorized = () => {
-    console.log('Авторизован');
-
     //Функция срабатывающая на кнопку выйти
     const logOut = () => {
         //выставляем кнопкам значени по умолчанию, а спан затераем
@@ -120,8 +125,6 @@ const authorized = () => {
 
 //Функция логики не авторизированного пользователя
 const notAuthorized = () => {
-    console.log('Не авторизован');
-
     //Функция которая срабатывает при отправке формы
     const logIn = (e) => {
         e.preventDefault();
@@ -155,9 +158,10 @@ const notAuthorized = () => {
 }
 
 //Функция создания карточки для товара из группы
-const createCardGood = ({ description, image, name, price }) => {
+const createCardGood = ({ id, description, image, name, price }) => {
 
     const card = document.createElement('div');
+    card.id = id;
     card.className = 'card';
     card.insertAdjacentHTML('beforeend', `
         <img src="${image}" alt="image" class="card-image" />
@@ -173,7 +177,7 @@ const createCardGood = ({ description, image, name, price }) => {
                 <span class="button-card-text">В корзину</span>
                 <span class="button-cart-png"></span>
                 </button>
-                <strong class="card-price-bold">${price} ₽</strong>
+                <strong class="card-price card-price-bold">${price} ₽</strong>
             </div>
         </div>
   `);
@@ -207,21 +211,69 @@ const openGoods = (event) => {
 const createCardRestaurant = (object) => {
     const { image, kitchen, name, price, products, stars, time_of_delivery: timeOfDelivery } = object;
     cardsRestaurants.insertAdjacentHTML('beforeend', `
-    <a class="card card-restaurant" data-product="${products}">
-      <img src="${image}" alt="image" class="card-image"/>
-      <div class="card-text">
-        <div class="card-heading">
-          <h3 class="card-title">${name}</h3>
-          <span class="card-tag tag">${timeOfDelivery} мин</span>
+        <a class="card card-restaurant" data-product="${products}">
+        <img src="${image}" alt="image" class="card-image"/>
+        <div class="card-text">
+            <div class="card-heading">
+            <h3 class="card-title">${name}</h3>
+            <span class="card-tag tag">${timeOfDelivery} мин</span>
+            </div>
+            <div class="card-info">
+            <div class="rating">${stars}</div>
+            <div class="price">От ${price} ₽</div>
+            <div class="category">${kitchen}</div>
+            </div>
         </div>
-        <div class="card-info">
-          <div class="rating">${stars}</div>
-          <div class="price">От ${price} ₽</div>
-          <div class="category">${kitchen}</div>
-        </div>
-      </div>
-    </a>
+        </a>
     `);
+}
+
+//Добавление в карзину
+const addToCart = (event) => {
+    const target = event.target;
+    const button = target.closest('.button-add-cart');
+    if( button ){
+        const card = target.closest('.card');
+        
+        const id = card.id;
+        const title = card.querySelector('.card-title-reg').textContent;
+        const price = card.querySelector('.card-price').textContent;
+        cart.push({id, title, price, count: 1});
+        button.style.display = 'none';
+    }
+}
+
+const createCartItem = ({title, price, count}) => {
+    const food = `
+        <div class="food-row">
+            <span class="food-name">${title}</span>
+            <strong class="food-price">${price}</strong>
+            <div class="food-counter">
+                <button class="counter-button">-</button>
+                <span class="counter">${count}</span>
+                <button class="counter-button">+</button>
+            </div>
+        </div>
+    `;
+    listItems.insertAdjacentHTML('afterbegin', food);
+
+}
+
+//Отрисовка товара в корзине
+const renderCart = () => {
+    listItems.textContent = '';
+    cart.forEach((item) => {
+        createCartItem(item);
+    });
+    let totalPrice = cart.reduce((result, item) => {
+        return result += parseInt(item.price) * item.count;
+    }, 0);
+    modalPricetag.textContent = `${totalPrice} ₽`;
+    
+}
+
+const clearCart = () => {
+    listItems.textContent = '';
 }
 
 //Функция инициализации
@@ -232,20 +284,25 @@ const init = () => {
             createCardRestaurant(data);
         });
     });
+
+    //==============================================События===========================================
+    
+    //Событие на отображение и скрытие модального окна с корзиной
+    cartButton.addEventListener("click", toggleModal);
+    cartButton.addEventListener("click", renderCart);
+    close.addEventListener("click", toggleModal);    
+    //Событие срабатывающие при клике по карточке товара
+    cardsRestaurants.addEventListener('click', openGoods);
+    //обработка нажатия по карточкам товаров
+    cardsMenu.addEventListener('click', addToCart);
+
+    buttonClearCart.addEventListener('click', clearCart);
+    
+    logo.addEventListener('click', returnMain);
     mySlider.init();
     checkOut();
 }
 
-
-//==============================================События===========================================
-//Событие на отображение и скрытие модального окна с корзиной
-cartButton.addEventListener("click", toggleModal);
-close.addEventListener("click", toggleModal);
-
-//Событие срабатывающие при клике по карточке товара
-cardsRestaurants.addEventListener('click', openGoods);
-
-logo.addEventListener('click', returnMain);
 
 //======================================Вызов функций=============================================
 
