@@ -29,6 +29,7 @@ const listItems = document.querySelector('.list-items'); //контейнер с
 const modalPricetag = document.querySelector('.modal-pricetag'); //вывод суммы покупки
 const buttonClearCart = document.querySelector('.clear-cart'); //кнопка отмены в корзине
 
+
 //получаем значение логина из локального хранилища браузера
 let login = localStorage.getItem('deliveryFood');
 
@@ -57,10 +58,6 @@ const getData = async function(url) {
     }
 }
 
-//Функция вызова swiper слайдера
-const startSlider = () => {
-
-}
 
 //Функция отображения модального окна с корзиной
 const toggleModal = () => {
@@ -82,13 +79,7 @@ const validlogin = (string) => {
 }
 
 //Функция для проверки пользователь является авторизированным или нет
-const checkOut = () => {
-    if (login) {
-        authorized();
-    } else {
-        notAuthorized();
-    }
-}
+const checkOut = () =>  login ? authorized() : notAuthorized();
 
 //Функция возврата на главную странцу
 const returnMain = () => {
@@ -243,38 +234,60 @@ const addToCart = (event) => {
     }
 }
 
-const createCartItem = ({title, price, count}) => {
+const changeCount = (event) => {
+    const target = event.target;
+    console.log(target);
+    
+    if( target.classList.contains('counter-plus')){
+        console.log('plus');
+    }
+    if( target.classList.contains('counter-minus')){
+        console.log('minus');        
+    }
+}
+
+const createCartItem = ({id, title, price, count}) => {
     const food = `
         <div class="food-row">
             <span class="food-name">${title}</span>
             <strong class="food-price">${price}</strong>
             <div class="food-counter">
-                <button class="counter-button">-</button>
+                <button class="counter-button counter-minus" data-id="${id}">-</button>
                 <span class="counter">${count}</span>
-                <button class="counter-button">+</button>
+                <button class="counter-button counter-plus" data-id="${id}">+</button>
             </div>
         </div>
     `;
     listItems.insertAdjacentHTML('afterbegin', food);
-
 }
+
+
 
 //Отрисовка товара в корзине
 const renderCart = () => {
     listItems.textContent = '';
-    cart.forEach((item) => {
-        createCartItem(item);
-    });
+    cart.forEach( item => createCartItem(item));
     let totalPrice = cart.reduce((result, item) => {
         return result += parseInt(item.price) * item.count;
     }, 0);
     modalPricetag.textContent = `${totalPrice} ₽`;
-    
+    // const counterButton = document.querySelector('.counter-button'); //Кнопки + и - в корзине
+    // counterButton.addEventListener('click', changeCount);
 }
 
+//очистка корзины
 const clearCart = () => {
     listItems.textContent = '';
+    cart.forEach( item => {
+        const card = document.getElementById(item.id);
+        const btn = card.querySelector('.button-add-cart');
+        btn.style.display = '';
+    } );
+    cart.length = 0;
+    modalPricetag.textContent = '0 ₽';
 }
+
+
 
 //Функция инициализации
 const init = () => {
@@ -297,6 +310,8 @@ const init = () => {
     cardsMenu.addEventListener('click', addToCart);
 
     buttonClearCart.addEventListener('click', clearCart);
+    
+
     
     logo.addEventListener('click', returnMain);
     mySlider.init();
