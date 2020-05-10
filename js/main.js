@@ -28,13 +28,13 @@ const buttonAddCart = document.querySelector('.button-add-cart'); //добавл
 const listItems = document.querySelector('.list-items'); //контейнер с выводом товаров
 const modalPricetag = document.querySelector('.modal-pricetag'); //вывод суммы покупки
 const buttonClearCart = document.querySelector('.clear-cart'); //кнопка отмены в корзине
-
+const modalBody = document.querySelector('.modal-body'); //модальное окно корзины
 
 //получаем значение логина из локального хранилища браузера
 let login = localStorage.getItem('deliveryFood');
 
 //Корзина
-const cart = [];
+const cart = JSON.parse(localStorage.getItem('deliveryCart')) || [];
 
 //============Swipper Slider============
 const mySlider = new Swiper('.swiper-container', {
@@ -230,27 +230,16 @@ const addToCart = (event) => {
         const title = card.querySelector('.card-title-reg').textContent;
         const price = card.querySelector('.card-price').textContent;
         cart.push({id, title, price, count: 1});
+        localStorage.setItem('deliveryCart', JSON.stringify(cart));
         button.style.display = 'none';
     }
 }
 
-const changeCount = (event) => {
-    const target = event.target;
-    console.log(target);
-    
-    if( target.classList.contains('counter-plus')){
-        console.log('plus');
-    }
-    if( target.classList.contains('counter-minus')){
-        console.log('minus');        
-    }
-}
-
-const createCartItem = ({id, title, price, count}) => {
+const createCartItem = ({id, title, price, count}) => {    
     const food = `
         <div class="food-row">
             <span class="food-name">${title}</span>
-            <strong class="food-price">${price}</strong>
+            <strong class="food-price">${parseInt(price) * count} ₽</strong>
             <div class="food-counter">
                 <button class="counter-button counter-minus" data-id="${id}">-</button>
                 <span class="counter">${count}</span>
@@ -274,7 +263,6 @@ const renderCart = () => {
     // const counterButton = document.querySelector('.counter-button'); //Кнопки + и - в корзине
     // counterButton.addEventListener('click', changeCount);
 }
-
 //очистка корзины
 const clearCart = () => {
     listItems.textContent = '';
@@ -285,9 +273,35 @@ const clearCart = () => {
     } );
     cart.length = 0;
     modalPricetag.textContent = '0 ₽';
+    // localStorage.setItem('deliveryCart', JSON.stringify(cart));
 }
 
-
+const changeCount = (event) => {
+    const target = event.target;
+    
+    if( target.classList.contains('counter-plus') ){
+        
+        const elem = cart.find( item => target.dataset.id == item.id);
+        elem.count++;
+        localStorage.setItem('deliveryCart', JSON.stringify(cart));
+        renderCart();
+    }
+    if( target.classList.contains('counter-minus') ){
+        const elem = cart.find( item => target.dataset.id == item.id);
+        if(elem.count > 1){
+            elem.count--;
+            localStorage.setItem('deliveryCart', JSON.stringify(cart));
+            renderCart();
+        }else{
+            cart.splice(cart.indexOf(elem), 1);
+            localStorage.setItem('deliveryCart', JSON.stringify(cart));
+            renderCart();
+            const card = document.getElementById(target.dataset.id);
+            const btn = card.querySelector('.button-add-cart');
+            btn.style.display = '';
+        }      
+    }
+}
 
 //Функция инициализации
 const init = () => {
@@ -308,11 +322,11 @@ const init = () => {
     cardsRestaurants.addEventListener('click', openGoods);
     //обработка нажатия по карточкам товаров
     cardsMenu.addEventListener('click', addToCart);
-
+    //очистка корзины
     buttonClearCart.addEventListener('click', clearCart);
-    
-
-    
+    //увеличивать/уменьшать кол-во товара
+    modalBody.addEventListener('click', changeCount);
+    //возвращение на главную страницу
     logo.addEventListener('click', returnMain);
     mySlider.init();
     checkOut();
