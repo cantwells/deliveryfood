@@ -34,7 +34,7 @@ const modalBody = document.querySelector('.modal-body'); //модальное о
 let login = localStorage.getItem('deliveryFood');
 
 //Корзина
-const cart = JSON.parse(localStorage.getItem('deliveryCart')) || [];
+const cart = JSON.parse(localStorage.getItem(`сart${login}`)) || [];
 
 //============Swipper Slider============
 const mySlider = new Swiper('.swiper-container', {
@@ -79,7 +79,7 @@ const validlogin = (string) => {
 }
 
 //Функция для проверки пользователь является авторизированным или нет
-const checkOut = () =>  login ? authorized() : notAuthorized();
+const checkOut = () => login ? authorized() : notAuthorized();
 
 //Функция возврата на главную странцу
 const returnMain = () => {
@@ -223,19 +223,19 @@ const createCardRestaurant = (object) => {
 const addToCart = (event) => {
     const target = event.target;
     const button = target.closest('.button-add-cart');
-    if( button ){
+    if (button) {
         const card = target.closest('.card');
-        
+
         const id = card.id;
         const title = card.querySelector('.card-title-reg').textContent;
         const price = card.querySelector('.card-price').textContent;
-        cart.push({id, title, price, count: 1});
-        localStorage.setItem('deliveryCart', JSON.stringify(cart));
+        cart.push({ id, title, price, count: 1 });
+        localStorage.setItem(`сart${login}`, JSON.stringify(cart));
         button.style.display = 'none';
     }
 }
 
-const createCartItem = ({id, title, price, count}) => {    
+const createCartItem = ({ id, title, price, count }) => {
     const food = `
         <div class="food-row">
             <span class="food-name">${title}</span>
@@ -250,56 +250,55 @@ const createCartItem = ({id, title, price, count}) => {
     listItems.insertAdjacentHTML('afterbegin', food);
 }
 
-
-
 //Отрисовка товара в корзине
 const renderCart = () => {
     listItems.textContent = '';
-    cart.forEach( item => createCartItem(item));
+    cart.forEach(item => createCartItem(item));
     let totalPrice = cart.reduce((result, item) => {
         return result += parseInt(item.price) * item.count;
     }, 0);
     modalPricetag.textContent = `${totalPrice} ₽`;
-    // const counterButton = document.querySelector('.counter-button'); //Кнопки + и - в корзине
-    // counterButton.addEventListener('click', changeCount);
 }
+
 //очистка корзины
 const clearCart = () => {
     listItems.textContent = '';
-    cart.forEach( item => {
+    cart.forEach(item => {
         const card = document.getElementById(item.id);
         const btn = card.querySelector('.button-add-cart');
         btn.style.display = '';
-    } );
+    });
     cart.length = 0;
     modalPricetag.textContent = '0 ₽';
-    // localStorage.setItem('deliveryCart', JSON.stringify(cart));
+    localStorage.removeItem(`сart${login}`);
 }
 
 const changeCount = (event) => {
     const target = event.target;
-    
-    if( target.classList.contains('counter-plus') ){
-        
-        const elem = cart.find( item => target.dataset.id == item.id);
+
+    if (target.classList.contains('counter-plus')) {
+
+        const elem = cart.find(item => target.dataset.id == item.id);
         elem.count++;
-        localStorage.setItem('deliveryCart', JSON.stringify(cart));
+        localStorage.setItem(`сart${login}`, JSON.stringify(cart));
         renderCart();
     }
-    if( target.classList.contains('counter-minus') ){
-        const elem = cart.find( item => target.dataset.id == item.id);
-        if(elem.count > 1){
+    if (target.classList.contains('counter-minus')) {
+        const elem = cart.find(item => target.dataset.id == item.id);
+        if (elem.count > 1) {
             elem.count--;
-            localStorage.setItem('deliveryCart', JSON.stringify(cart));
+            localStorage.setItem(`сart${login}`, JSON.stringify(cart));
             renderCart();
-        }else{
+        } else {
             cart.splice(cart.indexOf(elem), 1);
-            localStorage.setItem('deliveryCart', JSON.stringify(cart));
+
+            localStorage.setItem(`сart${login}`, JSON.stringify(cart));
+            if (!cart.length) localStorage.removeItem(`сart${login}`);
             renderCart();
             const card = document.getElementById(target.dataset.id);
             const btn = card.querySelector('.button-add-cart');
             btn.style.display = '';
-        }      
+        }
     }
 }
 
@@ -313,11 +312,11 @@ const init = () => {
     });
 
     //==============================================События===========================================
-    
+
     //Событие на отображение и скрытие модального окна с корзиной
     cartButton.addEventListener("click", toggleModal);
     cartButton.addEventListener("click", renderCart);
-    close.addEventListener("click", toggleModal);    
+    close.addEventListener("click", toggleModal);
     //Событие срабатывающие при клике по карточке товара
     cardsRestaurants.addEventListener('click', openGoods);
     //обработка нажатия по карточкам товаров
