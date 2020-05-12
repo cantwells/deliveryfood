@@ -67,24 +67,6 @@ const delCart = () => {
     localStorage.removeItem(`basket${login}`);
 }
 
-const hideBtn = () => {
-    console.log('hideBtn');
-
-    cart.forEach(order => {
-        setTime(() => {
-            console.log(order.id);
-
-            console.log(document.getElementById(order.id));
-
-            if (document.getElementById(order.id)) {
-                const card = document.getElementById(order.id);
-                const btn = card.querySelector('.button-add-cart');
-                btn.style.display = '';
-            }
-        }, 0)
-    });
-}
-
 //Функция отображения модального окна с корзиной
 const toggleModal = () => modalCart.classList.toggle("is-open");
 
@@ -98,7 +80,7 @@ const toggleModalAuth = () => {
 
 //Функция проверки валидации для поля логина
 const validlogin = (string) => {
-    const reg = /^[a-zA-Z][a-zA-Z0-9-_]{2,19}$/;
+    const reg = /^[a-zA-Z][a-zA-Z0-9-_]{1,19}$/;
     return reg.test(string);
 }
 
@@ -110,7 +92,6 @@ const returnMain = () => {
     containerPromo.classList.remove('hide');
     restaurants.classList.remove('hide');
     menu.classList.add('hide');
-    console.dir(mySlider);
 }
 
 //Функция логики авторизированного пользователя
@@ -162,7 +143,6 @@ const notAuthorized = () => {
             closeAuth.removeEventListener('click', toggleModalAuth);
             logInForm.removeEventListener('submit', logIn);
             logInForm.reset(); //очищаем форму
-            hideBtn();
             checkOut();
 
             if (formDest.card) {
@@ -230,7 +210,6 @@ const renderGoods = card => {
 const openGoods = (event) => {
     let target = event.target.closest('.card-restaurant');
     renderGoods(target);
-    hideBtn();
 }
 
 //Функция создания карточки с товаром
@@ -258,15 +237,21 @@ const createCardRestaurant = (object) => {
 const addToCart = (event) => {
     const target = event.target;
     const button = target.closest('.button-add-cart');
-    if (button) {
-        const card = target.closest('.card');
 
+    if ( button ){
+        const card = target.closest('.card');
         const id = card.id;
-        const title = card.querySelector('.card-title-reg').textContent;
-        const price = card.querySelector('.card-price').textContent;
-        cart.push({ id, title, price, count: 1 });
+        const repeatOrder = cart.find( order => order.id == id );
+    
+        if(repeatOrder ){
+            repeatOrder.count++;
+        }else{
+            const title = card.querySelector('.card-title-reg').textContent;
+            const price = card.querySelector('.card-price').textContent;
+            cart.push({ id, title, price, count: 1 });
+        } 
+        
         saveCart();
-        button.style.display = 'none';
     }
 }
 
@@ -298,7 +283,6 @@ const renderCart = () => {
 //очистка корзины
 const clearCart = () => {
     listItems.textContent = '';
-    hideBtn();
     cart.length = 0;
     modalPricetag.textContent = '0 ₽';
     delCart();
@@ -337,7 +321,6 @@ const changeCount = (event) => {
 const init = () => {
     getData('../db/partners.json').then((data) => {
         data.forEach((data) => {
-
             createCardRestaurant(data);
         });
     });
