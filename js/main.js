@@ -13,6 +13,7 @@ const buttonLogin = document.querySelector('.button-login'); //кнопка во
 const logInForm = document.getElementById('logInForm'); //форма в мод. окне авторизации
 const loginInput = document.getElementById('login'); //поле ввода логина
 const passInput = document.getElementById('password'); //поле ввода пароля
+const formDest = document.getElementById('form-dest'); //скрытое поле с данными по назанчени
 const userName = document.querySelector('.user-name'); //спан куда прописывается имя пользователя
 const cardsRestaurants = document.querySelector('.cards-restaurants'); //Секция для выводов карточек с блюдами
 const containerPromo = document.querySelector('.container-promo'); //секция с банером
@@ -45,7 +46,7 @@ const mySlider = new Swiper('.swiper-container', {
     // effect: 'flip',
     // slidesPerView: 2,
 });
-
+// mySlider.update();
 //====================================Функции=====================================================
 
 //Функция получения данных из db
@@ -58,11 +59,8 @@ const getData = async function(url) {
     }
 }
 
-
 //Функция отображения модального окна с корзиной
-const toggleModal = () => {
-    modalCart.classList.toggle("is-open");
-}
+const toggleModal = () => modalCart.classList.toggle("is-open");
 
 //функция отображения мод. окна авторизации
 const toggleModalAuth = () => {
@@ -86,7 +84,7 @@ const returnMain = () => {
     containerPromo.classList.remove('hide');
     restaurants.classList.remove('hide');
     menu.classList.add('hide');
-    mySlider.update();
+    console.dir(mySlider);
 }
 
 //Функция логики авторизированного пользователя
@@ -126,7 +124,7 @@ const notAuthorized = () => {
         if (passInput.value === '') {
             passInput.style.borderColor = 'red';
         }
-        if (validlogin(loginInput.value) && loginInput.value) {
+        if (loginInput.value && validlogin(loginInput.value)) {
             loginInput.style.borderColor = '';
             passInput.style.borderColor = '';
 
@@ -139,6 +137,11 @@ const notAuthorized = () => {
             logInForm.removeEventListener('submit', logIn);
             logInForm.reset(); //очищаем форму
             checkOut();
+
+            if (formDest.card) {
+                renderGoods(formDest.card);
+                delete formDest['card'];
+            }
         }
     }
 
@@ -175,27 +178,31 @@ const createCardGood = ({ id, description, image, name, price }) => {
     cardsMenu.insertAdjacentElement('beforeend', card);
 }
 
-//Фукнция срабатывания при нажатие по карточке в ресторане
-const openGoods = (event) => {
-    let target = event.target.closest('.card-restaurant');
-
-    if (target && login) {
+const renderGoods = card => {
+    if (login) {
         containerPromo.classList.add('hide');
         restaurants.classList.add('hide');
         menu.classList.remove('hide');
         cardsMenu.textContent = '';
-        restaurantTitle.textContent = target.querySelector('.card-title').textContent;
-        restaurantPrice.textContent = target.querySelector('.price').textContent;
-        restaurantRating.textContent = target.querySelector('.rating').textContent;
-        restaurantCategory.textContent = target.querySelector('.category').textContent;
-        getData(`../db/${target.dataset.product}`).then((data) => {
+        restaurantTitle.textContent = card.querySelector('.card-title').textContent;
+        restaurantPrice.textContent = card.querySelector('.price').textContent;
+        restaurantRating.textContent = card.querySelector('.rating').textContent;
+        restaurantCategory.textContent = card.querySelector('.category').textContent;
+        getData(`../db/${card.dataset.product}`).then((data) => {
             data.forEach((data) => {
                 createCardGood(data);
             });
         });
     } else {
+        formDest.card = card;
         toggleModalAuth();
     }
+}
+
+//Фукнция срабатывания при нажатие по карточке в ресторане
+const openGoods = (event) => {
+    let target = event.target.closest('.card-restaurant');
+    renderGoods(target);
 }
 
 //Функция создания карточки с товаром

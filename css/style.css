@@ -493,6 +493,10 @@
         margin-bottom: 22px;
     }
     
+    #form-dest {
+        display: none;
+    }
+    
     .food-row {
         display: flex;
         align-items: flex-start;
