@@ -35,7 +35,7 @@ const modalBody = document.querySelector('.modal-body'); //модальное о
 let login = localStorage.getItem('deliveryFood');
 
 //Корзина
-const cart = JSON.parse(localStorage.getItem(`сart${login}`)) || [];
+const cart = JSON.parse(localStorage.getItem(`basket${login}`)) || [];
 
 //============Swipper Slider============
 const mySlider = new Swiper('.swiper-container', {
@@ -57,6 +57,14 @@ const getData = async function(url) {
     } else {
         return await response.json();
     }
+}
+
+const saveCart = () => {
+    localStorage.setItem(`basket${login}`, JSON.stringify(cart));
+}
+
+const delCart = () => {
+    localStorage.removeItem(`basket${login}`);
 }
 
 //Функция отображения модального окна с корзиной
@@ -237,7 +245,7 @@ const addToCart = (event) => {
         const title = card.querySelector('.card-title-reg').textContent;
         const price = card.querySelector('.card-price').textContent;
         cart.push({ id, title, price, count: 1 });
-        localStorage.setItem(`сart${login}`, JSON.stringify(cart));
+        saveCart();
         button.style.display = 'none';
     }
 }
@@ -277,7 +285,7 @@ const clearCart = () => {
     });
     cart.length = 0;
     modalPricetag.textContent = '0 ₽';
-    localStorage.removeItem(`сart${login}`);
+    delCart();
 }
 
 const changeCount = (event) => {
@@ -287,20 +295,20 @@ const changeCount = (event) => {
 
         const elem = cart.find(item => target.dataset.id == item.id);
         elem.count++;
-        localStorage.setItem(`сart${login}`, JSON.stringify(cart));
+        saveCart();
         renderCart();
     }
     if (target.classList.contains('counter-minus')) {
         const elem = cart.find(item => target.dataset.id == item.id);
         if (elem.count > 1) {
             elem.count--;
-            localStorage.setItem(`сart${login}`, JSON.stringify(cart));
+            saveCart();
             renderCart();
         } else {
             cart.splice(cart.indexOf(elem), 1);
 
-            localStorage.setItem(`сart${login}`, JSON.stringify(cart));
-            if (!cart.length) localStorage.removeItem(`сart${login}`);
+            saveCart();
+            if (!cart.length) delCart();
             renderCart();
             const card = document.getElementById(target.dataset.id);
             const btn = card.querySelector('.button-add-cart');
