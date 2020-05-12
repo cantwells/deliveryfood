@@ -67,10 +67,10 @@ const delCart = () => {
     localStorage.removeItem(`basket${login}`);
 }
 
-//Функция отображения модального окна с корзиной
+//Отображение модального окна с корзиной
 const toggleModal = () => modalCart.classList.toggle("is-open");
 
-//функция отображения мод. окна авторизации
+//Отображение мод. окна авторизации
 const toggleModalAuth = () => {
     modalAuth.classList.toggle('is-open');
     loginInput.style.borderColor = '';
@@ -78,7 +78,7 @@ const toggleModalAuth = () => {
     logInForm.reset();
 }
 
-//Функция проверки валидации для поля логина
+//Проверки валидации для поля логина
 const validlogin = (string) => {
     const reg = /^[a-zA-Z][a-zA-Z0-9-_]{1,19}$/;
     return reg.test(string);
@@ -243,7 +243,7 @@ const addToCart = (event) => {
         const id = card.id;
         const repeatOrder = cart.find( order => order.id == id );
     
-        if(repeatOrder ){
+        if( repeatOrder ){
             repeatOrder.count++;
         }else{
             const title = card.querySelector('.card-title-reg').textContent;
@@ -292,29 +292,20 @@ const changeCount = (event) => {
     const target = event.target;
 
     if (target.classList.contains('counter-plus')) {
-
         const elem = cart.find(item => target.dataset.id == item.id);
         elem.count++;
-        saveCart();
-        renderCart();
     }
     if (target.classList.contains('counter-minus')) {
         const elem = cart.find(item => target.dataset.id == item.id);
         if (elem.count > 1) {
             elem.count--;
-            saveCart();
-            renderCart();
         } else {
             cart.splice(cart.indexOf(elem), 1);
-
-            saveCart();
             if (!cart.length) delCart();
-            renderCart();
-            const card = document.getElementById(target.dataset.id);
-            const btn = card.querySelector('.button-add-cart');
-            btn.style.display = '';
         }
     }
+    renderCart();
+    saveCart();
 }
 
 //Функция инициализации
@@ -344,7 +335,6 @@ const init = () => {
     // mySlider.init();
     checkOut();
 }
-
 
 //======================================Вызов функций=============================================
 
