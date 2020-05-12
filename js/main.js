@@ -67,6 +67,24 @@ const delCart = () => {
     localStorage.removeItem(`basket${login}`);
 }
 
+const hideBtn = () => {
+    console.log('hideBtn');
+
+    cart.forEach(order => {
+        setTime(() => {
+            console.log(order.id);
+
+            console.log(document.getElementById(order.id));
+
+            if (document.getElementById(order.id)) {
+                const card = document.getElementById(order.id);
+                const btn = card.querySelector('.button-add-cart');
+                btn.style.display = '';
+            }
+        }, 0)
+    });
+}
+
 //Функция отображения модального окна с корзиной
 const toggleModal = () => modalCart.classList.toggle("is-open");
 
@@ -144,6 +162,7 @@ const notAuthorized = () => {
             closeAuth.removeEventListener('click', toggleModalAuth);
             logInForm.removeEventListener('submit', logIn);
             logInForm.reset(); //очищаем форму
+            hideBtn();
             checkOut();
 
             if (formDest.card) {
@@ -211,6 +230,7 @@ const renderGoods = card => {
 const openGoods = (event) => {
     let target = event.target.closest('.card-restaurant');
     renderGoods(target);
+    hideBtn();
 }
 
 //Функция создания карточки с товаром
@@ -278,11 +298,7 @@ const renderCart = () => {
 //очистка корзины
 const clearCart = () => {
     listItems.textContent = '';
-    cart.forEach(item => {
-        const card = document.getElementById(item.id);
-        const btn = card.querySelector('.button-add-cart');
-        btn.style.display = '';
-    });
+    hideBtn();
     cart.length = 0;
     modalPricetag.textContent = '0 ₽';
     delCart();
@@ -342,7 +358,7 @@ const init = () => {
     modalBody.addEventListener('click', changeCount);
     //возвращение на главную страницу
     logo.addEventListener('click', returnMain);
-    mySlider.init();
+    // mySlider.init();
     checkOut();
 }
 
