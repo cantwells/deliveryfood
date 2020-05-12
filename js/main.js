@@ -35,7 +35,7 @@ const modalBody = document.querySelector('.modal-body'); //модальное о
 let login = localStorage.getItem('deliveryFood');
 
 //Корзина
-const cart = JSON.parse(localStorage.getItem(`basket${login}`)) || [];
+const cart = [];
 
 //============Swipper Slider============
 const mySlider = new Swiper('.swiper-container', {
@@ -49,6 +49,7 @@ const mySlider = new Swiper('.swiper-container', {
 // mySlider.update();
 //====================================Функции=====================================================
 
+
 //Функция получения данных из db
 const getData = async function(url) {
     const response = await fetch(url);
@@ -59,12 +60,19 @@ const getData = async function(url) {
     }
 }
 
+const loadCart = () => {
+    if(localStorage.getItem(`${login}glo`)){
+        const orders = JSON.parse(localStorage.getItem(`${login}glo`));
+        orders.forEach( order => cart.push(order) );
+    }
+}
+
 const saveCart = () => {
-    localStorage.setItem(`basket${login}`, JSON.stringify(cart));
+    localStorage.setItem(`${login}glo`, JSON.stringify(cart));
 }
 
 const delCart = () => {
-    localStorage.removeItem(`basket${login}`);
+    cart.length = 0;
 }
 
 //Отображение модального окна с корзиной
@@ -107,6 +115,8 @@ const authorized = () => {
         localStorage.removeItem('deliveryFood'); //удаляем данные из localStorage
         buttonOut.removeEventListener('click', logOut); //Удаляем событие нажатие кнопке Выйти
         returnMain();
+        
+        delCart();
         checkOut();
     }
 
@@ -117,6 +127,7 @@ const authorized = () => {
     userName.style.display = 'inline';
     userName.textContent = login;
     buttonOut.addEventListener('click', logOut);
+    loadCart();
 }
 
 //Функция логики не авторизированного пользователя
@@ -315,7 +326,7 @@ const init = () => {
             createCardRestaurant(data);
         });
     });
-
+    
     //==============================================События===========================================
 
     //Событие на отображение и скрытие модального окна с корзиной
